@@ -18,6 +18,10 @@ int main() {
   cout << "Active jiffies: " << LinuxParser::ActiveJiffies() << std::endl;
   cout << "Total processes: " << LinuxParser::TotalProcesses() << std::endl;
   cout << "Running processes: " << LinuxParser::RunningProcesses() << std::endl;
+  cout << "Running processes: " << LinuxParser::RunningProcesses() << std::endl;
+  int pid = 7411;
+  cout << "Process command: " << LinuxParser::Command(pid) << std::endl;
+  cout << "Process Ram: " << LinuxParser::Ram(pid) << std::endl;
 
 //  System system;
 //  NCursesDisplay::Display(system);

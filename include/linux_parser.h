@@ -50,13 +50,14 @@ long IdleJiffies();
 // Helper functions
 std::unordered_map<CPUStates, long> GetCpuData();
 std::string GetProcStatLineData(unsigned int line_no);
+std::string GetFileLineData(const std::string &filename, unsigned int line_no);
 
 // Processes
 std::string Command(int pid);
-std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
+unsigned int Ram(int pid);
 };  // namespace LinuxParser
 
 #endif

@@ -153,30 +153,33 @@ vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
-  //processes information is at line# 17 starting from 0
-  return std::stoi(GetProcStatLineData(17));
+  //processes information is at line# 16 starting from 0
+  return std::stoi(GetProcStatLineData(16));
 }
 
 // DONE: Read and return the number of running processes
 int LinuxParser::RunningProcesses() {
-  //processes information is at line# 18 starting from 0
-  return std::stoi(GetProcStatLineData(18));
+  //processes information is at line# 17 starting from 0
+  return std::stoi(GetProcStatLineData(17));
 }
 
 // DONE: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid) {
-  string command;
-  std::ifstream stream(kProcDirectory + to_string(pid) + "/cmdline");
-  if (stream.is_open()) {
-    std::getline(stream, command);
-  }
-  return command;
+  string command_filename = kProcDirectory + to_string(pid) + "/cmdline";
+  return GetFileLineData(command_filename, 0);
 }
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid[[maybe_unused]]) { return string(); }
+// DONE: Read and return the memory used by a process
+unsigned int LinuxParser::Ram(int pid) {
+  unsigned int ram;
+  string line_data, temp;
+  string command_filename = kProcDirectory + to_string(pid) + "/status";
+  //memory utilisation information is at line# 17 starting from 0
+  line_data = GetFileLineData(command_filename, 17);
+  std::istringstream line_stream(line_data);
+  line_stream >> temp >> ram;
+  return ram;
+}
 
 // TODO: Read and return the user ID associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
@@ -220,22 +223,31 @@ std::unordered_map<LinuxParser::CPUStates, long> LinuxParser::GetCpuData() {
 
 
 std::string LinuxParser::GetProcStatLineData(unsigned int line_no) {
-  // line index start from 0
   string line_data;
   // because /proc/stat file is only 20 lines long
   if (line_no >= 20) {
     return line_data;
   }
-  std::ifstream stream(kProcDirectory + kStatFilename);
+  line_data = GetFileLineData(kProcDirectory + kStatFilename, line_no);
+  // line contains the data at line_no
+  string temp;
+  std::istringstream line_stream(line_data);
+  line_stream >> temp >> line_data;
+  return line_data;
+}
+
+std::string LinuxParser::GetFileLineData(const std::string &filename, unsigned int line_no) {
+  // line index start from 0
+  string line_data;
+  std::ifstream stream(filename);
   if (stream.is_open()) {
-    string line;
-    for (unsigned int i = 0;  i < line_no; ++i) {
-      std::getline(stream, line);
+    unsigned int i = 0;
+    while(getline(stream, line_data) && i < line_no) {
+      ++i;
     }
-    // line contains the data at line_no
-    string temp;
-    std::istringstream line_stream(line);
-    line_stream >> temp >> line_data;
+    if (i != line_no) {
+      line_data = "";
+    }
   }
   return line_data;
 }
