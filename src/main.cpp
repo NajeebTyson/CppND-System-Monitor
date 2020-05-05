@@ -19,11 +19,12 @@ int main() {
   cout << "Total processes: " << LinuxParser::TotalProcesses() << std::endl;
   cout << "Running processes: " << LinuxParser::RunningProcesses() << std::endl;
   cout << "Running processes: " << LinuxParser::RunningProcesses() << std::endl;
-  int pid = 7411;
+  int pid = 30363;
   cout << "Process command: " << LinuxParser::Command(pid) << std::endl;
   cout << "Process Ram: " << LinuxParser::Ram(pid) << std::endl;
   cout << "Process Uid: " << LinuxParser::Uid(pid) << std::endl;
   cout << "Process User: " << LinuxParser::User(pid) << std::endl;
+  cout << "Process Up time: " << LinuxParser::UpTime(pid) << std::endl;
 
 //  System system;
 //  NCursesDisplay::Display(system);
