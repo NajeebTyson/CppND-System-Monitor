@@ -193,9 +193,17 @@ string LinuxParser::Uid(int pid) {
   return uid;
 }
 
-// TODO: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::User(int pid[[maybe_unused]]) { return string(); }
+// DONE: Read and return the user associated with a process
+string LinuxParser::User(int pid) {
+  string username;
+  string user_data = GetPasswdUserData(std::stoi(Uid(pid)));
+  if (user_data.empty()) {
+    return username;
+  }
+  std::istringstream line_stream(user_data);
+  std::getline(line_stream, username, ':');
+  return username;
+}
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
@@ -258,4 +266,24 @@ std::string LinuxParser::GetFileLineData(const std::string &filename, unsigned i
     }
   }
   return line_data;
+}
+
+std::string LinuxParser::GetPasswdUserData(unsigned int uid) {
+  // line index start from 0
+  string user_data, user_id_str, _;
+  std::ifstream stream(kPasswordPath);
+  if (stream.is_open()) {
+    unsigned int user_id = -999;
+    while(user_id != uid && getline(stream, user_data)) {
+      std::istringstream line_stream(user_data);
+      std::getline(line_stream, _, ':');
+      std::getline(line_stream, _, ':');
+      std::getline(line_stream, user_id_str, ':');
+      user_id = std::stoi(user_id_str);
+    }
+    if (user_id != uid) {
+      user_data = "";
+    }
+  }
+  return user_data;
 }

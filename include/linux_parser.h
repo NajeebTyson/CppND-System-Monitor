@@ -51,6 +51,7 @@ long IdleJiffies();
 std::unordered_map<CPUStates, long> GetCpuData();
 std::string GetProcStatLineData(unsigned int line_no);
 std::string GetFileLineData(const std::string &filename, unsigned int line_no);
+std::string GetPasswdUserData(unsigned int uid);
 
 // Processes
 std::string Command(int pid);
