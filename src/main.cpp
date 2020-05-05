@@ -22,6 +22,7 @@ int main() {
   int pid = 7411;
   cout << "Process command: " << LinuxParser::Command(pid) << std::endl;
   cout << "Process Ram: " << LinuxParser::Ram(pid) << std::endl;
+  cout << "Process Uid: " << LinuxParser::Uid(pid) << std::endl;
 
 //  System system;
 //  NCursesDisplay::Display(system);
