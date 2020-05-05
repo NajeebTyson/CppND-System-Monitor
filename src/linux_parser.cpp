@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <numeric>
 #include <experimental/filesystem>
+#include <iostream>
 
 #include "linux_parser.h"
 
@@ -150,8 +151,22 @@ long LinuxParser::IdleJiffies() {
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
-// TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses() { return 0; }
+// DONE: Read and return the total number of processes
+int LinuxParser::TotalProcesses() {
+  int processes{0};
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    string line;
+    // processes information is at line# 17 starting from 0
+    for (int i = 0; i < 17; ++i) {
+      getline(stream, line);
+    }
+    string temp;
+    std::istringstream line_stream(line);
+    line_stream >> temp >> processes;
+  }
+  return processes;
+}
 
 // TODO: Read and return the number of running processes
 int LinuxParser::RunningProcesses() { return 0; }
