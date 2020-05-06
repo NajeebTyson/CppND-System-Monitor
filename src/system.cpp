@@ -3,6 +3,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "process.h"
 #include "processor.h"
@@ -19,10 +20,10 @@ System::System() {
   this->kernel_ = LinuxParser::Kernel();
   this->os_ = LinuxParser::OperatingSystem();
 
-//  vector<int> pids = LinuxParser::Pids();
-//  for (int pid: pids) {
-//    Process process();
-//  }
+  vector<int> pids = LinuxParser::Pids();
+  for (int pid: pids) {
+    processes_.emplace_back(pid);
+  }
 }
 
 // TODO: Return the system's CPU
