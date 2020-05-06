@@ -19,21 +19,12 @@ Process::Process(int pid): pid_(pid), prev_proc_cpu_time(0), prev_system_cpu_tim
 }
 
 // DONE: Return this process's ID
-int Process::Pid() {
+int Process::Pid() const {
   return pid_;
 }
 
 // DONE: Return this process's CPU utilization
 float Process::CpuUtilization() {
-//  long total_time = LinuxParser::ActiveJiffies(pid_);
-//  cpu_utilization_ = 100.0 * ((total_time / float(sysconf(_SC_CLK_TCK))) / float(LinuxParser::UpTime(pid_)));
-//  return cpu_utilization_;
-    long system_cpu_time = LinuxParser::ActiveJiffies();
-    long proc_cpu_time = LinuxParser::ActiveJiffies(pid_);
-    cpu_utilization_ = 100.0 * (float(proc_cpu_time) - prev_proc_cpu_time);
-    cpu_utilization_ /= (float(system_cpu_time) - prev_system_cpu_time);
-    prev_proc_cpu_time = proc_cpu_time;
-    prev_system_cpu_time = system_cpu_time;
     return cpu_utilization_;
 }
 
@@ -63,4 +54,15 @@ long int Process::UpTime() {
 // DONE: Overload the "less than" comparison operator for Process objects
 bool Process::operator<(Process const& a) const {
   return cpu_utilization_ > a.cpu_utilization_;
+}
+void Process::refresh() {
+//  long total_time = LinuxParser::ActiveJiffies(pid_);
+//  cpu_utilization_ = 100.0 * ((total_time / float(sysconf(_SC_CLK_TCK))) / float(LinuxParser::UpTime(pid_)));
+//  return cpu_utilization_;
+  long system_cpu_time = LinuxParser::ActiveJiffies();
+  long proc_cpu_time = LinuxParser::ActiveJiffies(pid_);
+  cpu_utilization_ = 100.0 * (float(proc_cpu_time) - prev_proc_cpu_time);
+  cpu_utilization_ /= (float(system_cpu_time) - prev_system_cpu_time);
+  prev_proc_cpu_time = proc_cpu_time;
+  prev_system_cpu_time = system_cpu_time;
 }

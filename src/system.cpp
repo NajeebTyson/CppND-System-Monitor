@@ -18,11 +18,6 @@ using std::vector;
 System::System() {
   this->kernel_ = LinuxParser::Kernel();
   this->os_ = LinuxParser::OperatingSystem();
-
-  vector<int> pids = LinuxParser::Pids();
-  for (int pid: pids) {
-    processes_.emplace_back(pid);
-  }
 }
 
 // DONE: Return the system's CPU
@@ -32,7 +27,33 @@ Processor& System::Cpu() {
 
 // DONE: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
+  vector<int> pids = LinuxParser::Pids();
+
+  // remove processes which are closed
+  processes_.erase(std::remove_if(processes_.begin(), processes_.end(), [&pids](const Process& p){
+    return std::find(pids.begin(), pids.end(), p.Pid()) == pids.end();
+  }), processes_.end());
+
+  set<int> existing_pids;
+  for (const Process &process: processes_) {
+    existing_pids.insert(process.Pid());
+  }
+
+  // put new processes
+  for (int pid: pids) {
+    if (existing_pids.find(pid) == existing_pids.end()) {
+      processes_.emplace_back(pid);
+    }
+  }
+
+  // refresh CPU usage
+  for (Process &process: processes_) {
+    process.refresh();
+  }
+
+  // sort the processes by their cpu utilization
   std::sort(processes_.begin(), processes_.end());
+
   return processes_;
 }
 
