@@ -4,7 +4,6 @@
 #include <fstream>
 #include <regex>
 #include <string>
-#include <unordered_map>
 
 namespace LinuxParser {
 // Paths
@@ -48,7 +47,6 @@ long ActiveJiffies(int pid);
 long IdleJiffies();
 
 // Helper functions
-std::unordered_map<CPUStates, long> GetCpuData();
 std::string GetProcStatLineData(unsigned int line_no);
 std::string GetFileLineData(const std::string &filename, unsigned int line_no);
 std::string GetPasswdUserData(unsigned int uid);

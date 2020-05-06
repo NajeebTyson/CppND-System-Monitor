@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <numeric>
 #include <experimental/filesystem>
 #include <iostream>
@@ -135,21 +134,46 @@ long LinuxParser::ActiveJiffies(int pid) {
 
 // DONE: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
-  auto cpu_data = GetCpuData();
+  auto cpu_data = CpuUtilization();
   return std::accumulate(cpu_data.begin(), cpu_data.end(), 0,
-                         [](const long previous, const std::pair<LinuxParser::CPUStates, long>& p){
-                           return previous + p.second;
+                         [](const long previous, const string& p){
+                           return previous + std::stol(p);
                          });
 }
 
 // DONE: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() {
-  auto cpu_data = GetCpuData();
-  return cpu_data[CPUStates::kIdle_] + cpu_data[CPUStates::kIOwait_];
+  auto cpu_data = CpuUtilization();
+  return std::stol(cpu_data[CPUStates::kIdle_]) + std::stol(cpu_data[CPUStates::kIOwait_]);
 }
 
-// TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+// DONE: Read and return CPU utilization
+vector<string> LinuxParser::CpuUtilization() {
+  vector<string> cpu_utilization(10);
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    string line, temp;
+    string c_user, c_nice, c_system, c_idle, c_iowait;
+    string c_irq, c_softirq, c_steal, c_guest, c_guestnice;
+
+    std::getline(stream, line);
+    std::istringstream line_stream(line);
+    line_stream >> temp >> c_user >> c_nice >> c_system >> c_idle >> c_iowait;
+    line_stream >> c_irq >> c_softirq >> c_steal >> c_guest >> c_guestnice;
+
+    cpu_utilization[LinuxParser::CPUStates::kUser_] = c_user;
+    cpu_utilization[LinuxParser::CPUStates::kNice_] = c_nice;
+    cpu_utilization[LinuxParser::CPUStates::kSystem_] = c_system;
+    cpu_utilization[LinuxParser::CPUStates::kIdle_] = c_idle;
+    cpu_utilization[LinuxParser::CPUStates::kIOwait_] = c_iowait;
+    cpu_utilization[LinuxParser::CPUStates::kIRQ_] = c_irq;
+    cpu_utilization[LinuxParser::CPUStates::kSoftIRQ_] = c_softirq;
+    cpu_utilization[LinuxParser::CPUStates::kSteal_] = c_steal;
+    cpu_utilization[LinuxParser::CPUStates::kGuest_] = c_guest;
+    cpu_utilization[LinuxParser::CPUStates::kGuestNice_] = c_guestnice;
+  }
+  return cpu_utilization;
+}
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
@@ -233,34 +257,6 @@ long LinuxParser::UpTime(int pid) {
 }
 
 // helper functions
-std::unordered_map<LinuxParser::CPUStates, long> LinuxParser::GetCpuData() {
-  std::ifstream stream(kProcDirectory + kStatFilename);
-  std::unordered_map<LinuxParser::CPUStates, long> cpu_data;
-  if (stream.is_open()) {
-    string line, temp;
-    long c_user, c_nice, c_system, c_idle, c_iowait;
-    long c_irq, c_softirq, c_steal, c_guest, c_guestnice;
-
-    std::getline(stream, line);
-    std::istringstream line_stream(line);
-    line_stream >> temp >> c_user >> c_nice >> c_system >> c_idle >> c_iowait;
-    line_stream >> c_irq >> c_softirq >> c_steal >> c_guest >> c_guestnice;
-
-    cpu_data[LinuxParser::CPUStates::kUser_] = c_user;
-    cpu_data[LinuxParser::CPUStates::kNice_] = c_nice;
-    cpu_data[LinuxParser::CPUStates::kSystem_] = c_system;
-    cpu_data[LinuxParser::CPUStates::kIdle_] = c_idle;
-    cpu_data[LinuxParser::CPUStates::kIOwait_] = c_iowait;
-    cpu_data[LinuxParser::CPUStates::kIRQ_] = c_irq;
-    cpu_data[LinuxParser::CPUStates::kSoftIRQ_] = c_softirq;
-    cpu_data[LinuxParser::CPUStates::kSteal_] = c_steal;
-    cpu_data[LinuxParser::CPUStates::kGuest_] = c_guest;
-    cpu_data[LinuxParser::CPUStates::kGuestNice_] = c_guestnice;
-  }
-  return cpu_data;
-}
-
-
 std::string LinuxParser::GetProcStatLineData(unsigned int line_no) {
   string line_data;
   // because /proc/stat file is only 20 lines long
