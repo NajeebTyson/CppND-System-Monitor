@@ -29,16 +29,21 @@ string Process::Command() {
   return command_;
 }
 
-// TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+// DONE: Return this process's memory utilization
+string Process::Ram() {
+  // converting the ram to MB from KB
+  return to_string(LinuxParser::Ram(pid_) / 1024.0);
+}
 
 // DONE: Return the user (name) that generated this process
 string Process::User() {
   return user_;
 }
 
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
+// DONE: Return the age of this process (in seconds)
+long int Process::UpTime() {
+  return LinuxParser::UpTime(pid_);
+}
 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
