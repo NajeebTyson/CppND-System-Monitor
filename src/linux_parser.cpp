@@ -166,7 +166,10 @@ int LinuxParser::RunningProcesses() {
 // DONE: Read and return the command associated with a process
 string LinuxParser::Command(int pid) {
   string command_filename = kProcDirectory + to_string(pid) + kCmdlineFilename;
-  return GetFileLineData(command_filename, 0);
+  std::istringstream line_stream(GetFileLineData(command_filename, 0));
+  std::string command;
+  line_stream >> command;
+  return command;
 }
 
 // DONE: Read and return the memory used by a process

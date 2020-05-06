@@ -15,6 +15,7 @@ using std::vector;
 Process::Process(int pid): pid_(pid) {
   user_ = LinuxParser::User(pid);
   command_ = LinuxParser::Command(pid);
+  CpuUtilization();
 }
 
 // DONE: Return this process's ID
@@ -22,10 +23,11 @@ int Process::Pid() {
   return pid_;
 }
 
-// TODO: Return this process's CPU utilization
+// DONE: Return this process's CPU utilization
 float Process::CpuUtilization() {
   long process_active_jiffies = LinuxParser::ActiveJiffies(pid_);
-  return 100.0 * ((process_active_jiffies / float(sysconf(_SC_CLK_TCK))) / float(LinuxParser::UpTime(pid_)));
+  cpu_utilization_ = 100.0 * ((process_active_jiffies / float(sysconf(_SC_CLK_TCK))) / float(LinuxParser::UpTime(pid_)));
+  return cpu_utilization_;
 }
 
 // DONE: Return the command that generated this process
@@ -51,6 +53,7 @@ long int Process::UpTime() {
   return LinuxParser::UpTime(pid_);
 }
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+// DONE: Overload the "less than" comparison operator for Process objects
+bool Process::operator<(Process const& a) const {
+  return cpu_utilization_ > a.cpu_utilization_;
+}
