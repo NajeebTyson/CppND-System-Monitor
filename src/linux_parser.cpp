@@ -100,7 +100,8 @@ long LinuxParser::UpTime() {
 
 // DONE: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() {
-  return sysconf(_SC_CLK_TCK) * UpTime();
+//  return sysconf(_SC_CLK_TCK) * UpTime();
+  return ActiveJiffies() + IdleJiffies();
 }
 
 // DONE: Read and return the number of active jiffies for a PID

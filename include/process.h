@@ -23,6 +23,8 @@ class Process {
   std::string user_;
   std::string command_;
   float cpu_utilization_;
+  float prev_proc_cpu_time;
+  float prev_system_cpu_time;
 };
 
 #endif

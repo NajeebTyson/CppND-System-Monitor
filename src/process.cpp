@@ -12,7 +12,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid): pid_(pid) {
+Process::Process(int pid): pid_(pid), prev_proc_cpu_time(0), prev_system_cpu_time(0) {
   user_ = LinuxParser::User(pid);
   command_ = LinuxParser::Command(pid);
   CpuUtilization();
@@ -25,9 +25,16 @@ int Process::Pid() {
 
 // DONE: Return this process's CPU utilization
 float Process::CpuUtilization() {
-  long process_active_jiffies = LinuxParser::ActiveJiffies(pid_);
-  cpu_utilization_ = 100.0 * ((process_active_jiffies / float(sysconf(_SC_CLK_TCK))) / float(LinuxParser::UpTime(pid_)));
-  return cpu_utilization_;
+//  long total_time = LinuxParser::ActiveJiffies(pid_);
+//  cpu_utilization_ = 100.0 * ((total_time / float(sysconf(_SC_CLK_TCK))) / float(LinuxParser::UpTime(pid_)));
+//  return cpu_utilization_;
+    long system_cpu_time = LinuxParser::ActiveJiffies();
+    long proc_cpu_time = LinuxParser::ActiveJiffies(pid_);
+    cpu_utilization_ = 100.0 * (float(proc_cpu_time) - prev_proc_cpu_time);
+    cpu_utilization_ /= (float(system_cpu_time) - prev_system_cpu_time);
+    prev_proc_cpu_time = proc_cpu_time;
+    prev_system_cpu_time = system_cpu_time;
+    return cpu_utilization_;
 }
 
 // DONE: Return the command that generated this process
