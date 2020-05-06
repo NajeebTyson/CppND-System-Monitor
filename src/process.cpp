@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include "process.h"
 #include "../include/linux_parser.h"
@@ -22,7 +23,10 @@ int Process::Pid() {
 }
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+float Process::CpuUtilization() {
+  long process_active_jiffies = LinuxParser::ActiveJiffies(pid_);
+  return 100.0 * ((process_active_jiffies / float(sysconf(_SC_CLK_TCK))) / float(LinuxParser::UpTime(pid_)));
+}
 
 // DONE: Return the command that generated this process
 string Process::Command() {
@@ -32,7 +36,9 @@ string Process::Command() {
 // DONE: Return this process's memory utilization
 string Process::Ram() {
   // converting the ram to MB from KB
-  return to_string(LinuxParser::Ram(pid_) / 1024.0);
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(2) << (LinuxParser::Ram(pid_) / 1024.0);
+  return stream.str();
 }
 
 // DONE: Return the user (name) that generated this process
