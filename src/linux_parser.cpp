@@ -81,7 +81,7 @@ float LinuxParser::MemoryUtilization() {
     std::getline(stream, line);
     std::istringstream free_mem_line_stream(line);
     free_mem_line_stream >> temp >> free_memory;
-    memory_utilized = total_memory - free_memory;
+    memory_utilized = (total_memory - free_memory) / total_memory;
   }
   return memory_utilized;
 }
