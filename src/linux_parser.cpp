@@ -113,7 +113,7 @@ long LinuxParser::Jiffies() {
  */
 long LinuxParser::ActiveJiffies(int pid) {
   long active_jiffies = 0;
-  std::ifstream stream(kProcDirectory + to_string(pid) + "/stat");
+  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
   if (stream.is_open()) {
     string line;
     std::getline(stream, line);
@@ -165,7 +165,7 @@ int LinuxParser::RunningProcesses() {
 
 // DONE: Read and return the command associated with a process
 string LinuxParser::Command(int pid) {
-  string command_filename = kProcDirectory + to_string(pid) + "/cmdline";
+  string command_filename = kProcDirectory + to_string(pid) + kCmdlineFilename;
   return GetFileLineData(command_filename, 0);
 }
 
@@ -173,7 +173,7 @@ string LinuxParser::Command(int pid) {
 unsigned int LinuxParser::Ram(int pid) {
   unsigned int ram;
   string line_data, temp;
-  string command_filename = kProcDirectory + to_string(pid) + "/status";
+  string command_filename = kProcDirectory + to_string(pid) + kStatusFilename;
   //memory utilisation information is at line# 17 starting from 0
   line_data = GetFileLineData(command_filename, 17);
   std::istringstream line_stream(line_data);
@@ -185,7 +185,7 @@ unsigned int LinuxParser::Ram(int pid) {
 string LinuxParser::Uid(int pid) {
   string uid;
   string line_data, temp;
-  string command_filename = kProcDirectory + to_string(pid) + "/status";
+  string command_filename = kProcDirectory + to_string(pid) + kStatusFilename;
   //process uid information is at line# 8 starting from 0
   line_data = GetFileLineData(command_filename, 8);
   std::istringstream line_stream(line_data);
@@ -208,7 +208,7 @@ string LinuxParser::User(int pid) {
 // DONE: Read and return the uptime of a process
 long LinuxParser::UpTime(int pid) {
   long uptime = 0;
-  std::ifstream stream(kProcDirectory + to_string(pid) + "/stat");
+  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
   if (stream.is_open()) {
     string line;
     std::getline(stream, line);

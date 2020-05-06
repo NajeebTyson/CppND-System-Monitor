@@ -18,6 +18,11 @@ using std::vector;
 System::System() {
   this->kernel_ = LinuxParser::Kernel();
   this->os_ = LinuxParser::OperatingSystem();
+
+//  vector<int> pids = LinuxParser::Pids();
+//  for (int pid: pids) {
+//    Process process();
+//  }
 }
 
 // TODO: Return the system's CPU
