@@ -47,7 +47,7 @@ long ActiveJiffies(int pid);
 long IdleJiffies();
 
 // Helper functions
-std::string GetProcStatLineData(unsigned int line_no);
+std::string GetFileLineDataByKey(const std::string& filename, const std::string& key);
 std::string GetFileLineData(const std::string &filename, unsigned int line_no);
 std::string GetPasswdUserData(unsigned int uid);
 

@@ -178,13 +178,15 @@ vector<string> LinuxParser::CpuUtilization() {
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
   //processes information is at line# 16 starting from 0
-  return std::stoi(GetProcStatLineData(16));
+  std::string proc_stat_filepath{kProcDirectory + kStatFilename};
+  return std::stoi(GetFileLineDataByKey(proc_stat_filepath, "processes"));
 }
 
 // DONE: Read and return the number of running processes
 int LinuxParser::RunningProcesses() {
   //processes information is at line# 17 starting from 0
-  return std::stoi(GetProcStatLineData(17));
+  std::string proc_stat_filepath{kProcDirectory + kStatFilename};
+  return std::stoi(GetFileLineDataByKey(proc_stat_filepath, "procs_running"));
 }
 
 // DONE: Read and return the command associated with a process
@@ -257,17 +259,20 @@ long LinuxParser::UpTime(int pid) {
 }
 
 // helper functions
-std::string LinuxParser::GetProcStatLineData(unsigned int line_no) {
+std::string LinuxParser::GetFileLineDataByKey(const string& filename, const std::string& key) {
   string line_data;
-  // because /proc/stat file is only 20 lines long
-  if (line_no >= 20) {
-    return line_data;
+  std::ifstream stream(filename);
+  if (stream.is_open()) {
+    string line, line_key;
+    while(getline(stream, line)) {
+      std::istringstream line_stream(line);
+      line_stream >> line_key;
+      if (line_key == key) {
+        line_stream >> line_data;
+        break;
+      }
+    }
   }
-  line_data = GetFileLineData(kProcDirectory + kStatFilename, line_no);
-  // line contains the data at line_no
-  string temp;
-  std::istringstream line_stream(line_data);
-  line_stream >> temp >> line_data;
   return line_data;
 }
 
