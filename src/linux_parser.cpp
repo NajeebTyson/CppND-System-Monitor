@@ -177,14 +177,12 @@ vector<string> LinuxParser::CpuUtilization() {
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
-  //processes information is at line# 16 starting from 0
   std::string proc_stat_filepath{kProcDirectory + kStatFilename};
   return std::stoi(GetFileLineDataByKey(proc_stat_filepath, "processes"));
 }
 
 // DONE: Read and return the number of running processes
 int LinuxParser::RunningProcesses() {
-  //processes information is at line# 17 starting from 0
   std::string proc_stat_filepath{kProcDirectory + kStatFilename};
   return std::stoi(GetFileLineDataByKey(proc_stat_filepath, "procs_running"));
 }
